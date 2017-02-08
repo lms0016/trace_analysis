@@ -80,13 +80,13 @@ int constructInodeTable(unsigned targetInode, unsigned targetBlkno) {
     		temp->next = searcher;
     		myInodeTable = temp;
     		glo_inode++;
-    		printf("[INFO]updateInodeTable:New Header Inode Item \n");
+    		//printf("[INFO]updateInodeTable:New Header Inode Item \n");
     		return 0;
     	}
     	else if(searcher->inode == targetInode) {
     		if(targetBlkno > searcher->max_blkno) {
     			searcher->max_blkno = targetBlkno;
-    			printf("[INFO]updateInodeTable:Update Max Blockno of Header Inode Item\n");
+    			//printf("[INFO]updateInodeTable:Update Max Blockno of Header Inode Item\n");
     		}
     		return 0;
     	}
@@ -98,7 +98,7 @@ int constructInodeTable(unsigned targetInode, unsigned targetBlkno) {
     		temp->next = NULL;
     		searcher->next = temp;
     		glo_inode++;
-    		printf("[INFO]updateInodeTable:New Inode Item after Header Inode Item \n");
+    		//printf("[INFO]updateInodeTable:New Inode Item after Header Inode Item \n");
     		return 0;
     	}
     	else {
@@ -107,7 +107,7 @@ int constructInodeTable(unsigned targetInode, unsigned targetBlkno) {
     	    	if(searcher->inode == targetInode) {
     	    		if(targetBlkno > searcher->max_blkno) {
     	    			searcher->max_blkno = targetBlkno;
-    	    			printf("[INFO]updateInodeTable:Update Max Blockno \n");
+    	    			//printf("[INFO]updateInodeTable:Update Max Blockno \n");
     	    		}
     	    		return 0;
     	    	}
@@ -120,7 +120,7 @@ int constructInodeTable(unsigned targetInode, unsigned targetBlkno) {
     	    			temp->next = searcher->next;
     	    			searcher->next = temp;
     	    			glo_inode++;
-    	    			printf("[INFO]updateInodeTable:New Inode Item between Two Inode Items \n");
+    	    			//printf("[INFO]updateInodeTable:New Inode Item between Two Inode Items \n");
     	    			return 0;
     	    		}
     	    	}
@@ -130,7 +130,7 @@ int constructInodeTable(unsigned targetInode, unsigned targetBlkno) {
     	    if(searcher->inode == targetInode) {
     	    	if(targetBlkno > searcher->max_blkno) {
     	    		searcher->max_blkno = targetBlkno;
-    	    		printf("[INFO]updateInodeTable:Update Max Blockno of Tail Inode Item\n");
+    	    		//printf("[INFO]updateInodeTable:Update Max Blockno of Tail Inode Item\n");
     	    	}
     	    	return 0;
     	    }
@@ -142,7 +142,7 @@ int constructInodeTable(unsigned targetInode, unsigned targetBlkno) {
     	    	temp->next = NULL;
     	    	searcher->next = temp;
     	    	glo_inode++;
-    	    	printf("[INFO]updateInodeTable:New Tail Inode Item \n");
+    	    	//printf("[INFO]updateInodeTable:New Tail Inode Item \n");
     	    	return 0;
     	    }
     	}
@@ -154,7 +154,7 @@ int constructInodeTable(unsigned targetInode, unsigned targetBlkno) {
 		myInodeTable->max_blkno = targetBlkno;
 		myInodeTable->next = NULL;
 		glo_inode++;
-		printf("[INFO]updateInodeTable:New first Inode Item in table\n");
+		//printf("[INFO]updateInodeTable:New first Inode Item in table\n");
 		return 0;
 	}
 	// Return error
@@ -276,7 +276,7 @@ void firstRound() {
     	start = -100;
         fscanf(fin, "%u%u%d%u", &pc, &inode, &start, &blkno);
         if(start != -100) {
-        	printf("%8u %8u %3d %8u\n", pc, inode, -1, blkno);
+        	//printf("%8u %8u %3d %8u\n", pc, inode, -1, blkno);
         	// Construct inode table
         	if(constructInodeTable(inode, blkno) == -1) {
         		printf("[ERROR]constructInodeTable\n");	

@@ -318,13 +318,12 @@ void firstRound() {
     }
     printInodeTable();
     printPCTable();
-    printf("Data Size(MB):%u\n", glo_blkno/256);
-    printf("Number of file:%u\n", glo_inode);
+    printf("Total inode:%u\n", glo_inode);
     printf("Total blocks:%u\n", glo_blkno);
-    printf("Number of PC:%u\n", glo_pc);
+    printf("Total pcs:%u\n", glo_pc);
 }
 
-void secondRound() {
+void secondRound(const char *format) {
 	if (!fin) {
         printf("[ERROR]2nd ROUND:Input file open error.\n");
         exit(1);
@@ -335,58 +334,67 @@ void secondRound() {
         exit(1);
     }
 
+    int flag = 0; // For format2 output (first line)
+    unsigned int previousPC = 0; // For format2 output
+
     while(!feof(fin)) {
-    	start = -100;
+    	start = -100; // Any number to check & stop the last line 
     	fscanf(fin, "%u%u%d%u", &pc, &inode, &start, &blkno);
     	if(start != -100) {
     		// Output file
     		// Modify inode
     		// Modify pc
-    		fprintf(fout, "%u %u %d %u\n", lookupPCTable(pc), inode, -1, lookupInodeTable(inode, blkno));                            
+    		if(!strcmp(format, "0")) {
+    			// Output Format0: pc inode -1 blkno
+    			fprintf(fout, "%u %u %d %u\n", lookupPCTable(pc), inode, -1, lookupInodeTable(inode, blkno));
+    		}
+    		else if(!strcmp(format, "1")) {
+    			// Output Format1: blkno
+    			fprintf(fout, "%u\n", lookupInodeTable(inode, blkno)); 
+    		}
+    		else if(!strcmp(format, "2")) {
+    			
+    			if(flag == 1) {
+    				if(previousPC == lookupPCTable(pc)) {
+    					fprintf(fout, "%u\n", lookupInodeTable(inode, blkno));
+    				}
+    				else {
+    					fprintf(fout, "-1 %u\n%u\n", lookupPCTable(pc), lookupInodeTable(inode, blkno)); 
+    				}
+    				previousPC = lookupPCTable(pc);
+    			}
+    			else if(flag == 0) {
+    				fprintf(fout, "-1 %u\n%u\n", lookupPCTable(pc), lookupInodeTable(inode, blkno)); 
+    				flag =1;
+    				previousPC = lookupPCTable(pc);
+    			}
+    		}
+    		else{
+    			printf("[ERROR]2nd ROUND:Output format error.\n");
+    			exit(1);
+    		}
     	}
     }
-}
-
-//LMS
-void thirdRound() {
-	if (!fin) {
-        printf("[ERROR]3nd ROUND:Input file open error.\n");
-        exit(1);
-    }
-
-    if (!fout) {
-        printf("[ERROR]3nd ROUND:Output file open error.\n");
-        exit(1);
-    }
-
-    while(!feof(fin)) {
-    	start = -100;
-    	fscanf(fin, "%u%u%d%u", &pc, &inode, &start, &blkno);
-    	if(start != -100) {  		
-            //計算連續的比例 
-        	ConsRatio(blkno,inode);   
-    	}
-    }    
-    printf("Fraction of consecutive references:%.1f\n", FracOfCons);    
 }
 
 int main(int argc, char const *argv[]){
     fin = fopen(argv[1], "r");
     fout = fopen(argv[2], "w");
 
-    if (argc != 3) {
-        printf("Used:%s inputTrace outputTrace\n", argv[0]);
+    if (argc != 4) {
+        printf("Used:%s inputTrace outputTrace format[0-2]\n", argv[0]);
         exit(1);
     }
 
+    printf("Output Format: %s\n", argv[3]); 
+
     firstRound();
     rewind(fin);
-    secondRound();    
+    secondRound(argv[3]); 
     
     fclose(fin);
     fclose(fout);
-    fin = fopen(argv[2], "r");    
-    thirdRound();
+    
     return 0;
 }
 
